@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Race Track Analysis Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<!-- Plot Filter Modal -->
+<div class="modal fade" id="plotFilterModal" tabindex="-1" aria-labelledby="plotFilterModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="plotFilterModalLabel">Select Individual Plots</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="plot-checkboxes" class="row row-cols-2"></div>
+        <div class="form-check mt-3">
+          <input class="form-check-input" type="checkbox" value="" id="showAllDefault" checked>
+          <label class="form-check-label" for="showAllDefault">
+            Show all by default (ignore selection)
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="applyPlotFilter" class="btn btn-primary">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<body>
+  <div id="main-layout">
+      <!-- Map (Left 1/3rd of Screen) -->
+      <div class="left-panel">
+        <h3 class="mb-3">Laguna Seca Race Track Map</h3>
+        <iframe id="track-map" src="/map" style="width: 100%; height: 540px; border: none;"></iframe>
+      </div>
+
+      <!-- Right 2/3rd of Screen -->
+      <div class="right-panel">
+        <h3 class="mb-3">Segment Information</h3>
+        <div id="segment-info-container" class="flex-shrink-1 mb-3" style="overflow-y: auto;">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <h5 id="segment-title" class="card-title">Zone: full</h5>
+
+            <div id="lap-selector-wrapper" class="d-flex align-items-center gap-2" style="display: none;">
+              <label for="lap-selector" class="mb-0">Lap:</label>
+              <select id="lap-selector" class="form-select form-select-sm" style="width: auto;"></select>
+              <button onclick="localStorage.clear(); location.reload();" class="btn btn-sm btn-outline-secondary">
+                Clear View Settings
+              </button>  
+            </div>
+
+            </div>            
+            <div class="row mt-3 mb-2">
+              <div class="col-4">
+                <label class="form-label">Start Segment:</label>
+                <select class="form-select" id="start-segment-select">
+                  <option disabled selected>Select Start Segment</option>
+                </select>
+              </div>
+              <div class="col-4">
+                <label class="form-label">End Segment:</label>
+                <select class="form-select" id="end-segment-select">
+                  <option disabled selected>Select End Segment</option>
+                </select>
+              </div>
+              <div class="col-4 d-flex gap-2 align-items-end">
+                <button id="apply-range" class="btn btn-primary w-50 btn-sm">Apply</button>
+                <button id="clear-selection" class="btn btn-outline-secondary w-50 btn-sm">Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload CSV -->
+        <form id="upload-form" enctype="multipart/form-data">
+          <div class="input-group mb-2">
+            <input type="file" class="form-control" id="csv-files" name="files" accept=".csv" multiple>
+            <button type="submit" class="btn btn-success btn-sm">Upload</button>
+            <button type="button" id="reset-uploads" class="btn btn-danger btn-sm">Reset</button>
+          </div>
+
+          <div class="mb-3">
+            <button class="btn btn-outline-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#uploadedFilesCollapse">
+              Show Uploaded Files
+            </button>
+            <div class="collapse mt-2" id="uploadedFilesCollapse">
+              <div class="card card-body p-2 bg-light">
+                <ul id="uploaded-files-list" class="list-group list-group-flush small mb-0"></ul>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- Upload status -->
+        <div id="upload-status" class="text-success small mb-2"></div>
+
+        <!-- Column selector -->
+        <div class="d-flex gap-2 align-items-end mb-3">
+          <select class="form-select" id="column-dropdown" multiple size=3>
+            <option selected disabled>Choose column...</option>
+          </select>
+          <button id="submit-column" class="btn btn-primary btn-sm">Plot</button>
+        </div>
+
+        <!-- Chart area -->
+        <div id="chart-area" class="flex-grow-1" style="overflow-y: auto; min-height: 200px;">
+          <h5 id="chart-title" class="mb-2">Plot</h5>
+          <div id="chart-container" class="d-flex flex-column gap-4 h-100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" style="
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color:rgb(216, 184, 22);
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 16px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    bottom: 30px;
+    font-size: 16px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);">
+    Upload successful!
+  </div>
+
+  <script src="/static/js/index.js"></script>
+
+</body>
+</html>
