@@ -11,10 +11,17 @@ import re
 app = Flask(__name__)
 
 
+# Defining Absolute Paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+KML_FILE = os.path.join(BASE_DIR, "data", "ls_centerline_lla.kml")
+CSV_PATH_TRACK = os.path.join(BASE_DIR, "data", "laguna_seca_profile.csv")
+CSV_PATH_DATA = os.path.join(BASE_DIR, "data", "combined_uploaded.csv")
+
+
 # -----------------------------
 # Global Variables For Configuration
 # -----------------------------
-KML_FILE = "data/ls_centerline_lla.kml"
 
 START_FINISH = (36.586462, -121.756647)  # starting point of the race track
 
@@ -123,11 +130,6 @@ BRIDGES = {
 A  = 6378137.0           # Earth's radius 
 E2 = 6.69437999014e-3    # Earth's eccentricity
 F  = 1 / 298.257223563   # Earth's flattening
-
-PLOT_DIR = os.path.join("static", "plots")
-
-CSV_PATH_TRACK = "data/laguna_seca_profile.csv"
-CSV_PATH_DATA = "data/combined_uploaded.csv"   
 
 KEYWORD_MAP = {
     "gg_plot": "GG Plot",
@@ -931,4 +933,4 @@ def get_uploaded_trajectory():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
